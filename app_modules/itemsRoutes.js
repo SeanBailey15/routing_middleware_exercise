@@ -22,18 +22,20 @@ router.get("/:name", middleware.handleRetrieveItem, (req, res) => {
 router.post("/", (req, res) => {
   const data = req.body;
   items.push(data);
-  return res.json({ added: data });
+  return res.status(201).json({ added: data });
 });
 
 router.patch("/:name", middleware.handleRetrieveItem, (req, res) => {
   let itemAtIndex = items.indexOf(res.locals.item);
-  const originalItem = items[itemAtIndex];
+  const originalItem = { ...items[itemAtIndex] };
   const data = req.body;
 
   if (data.hasOwnProperty("name") && !data.hasOwnProperty("price")) {
     items[itemAtIndex].name = data.name;
+    return res.json({ original: originalItem, updated: items[itemAtIndex] });
   } else if (!data.hasOwnProperty("name") && data.hasOwnProperty("price")) {
     items[itemAtIndex].price = data.price;
+    return res.json({ original: originalItem, updated: items[itemAtIndex] });
   }
   items[itemAtIndex] = data;
   return res.json({ original: originalItem, updated: items[itemAtIndex] });
